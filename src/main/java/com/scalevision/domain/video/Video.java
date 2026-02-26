@@ -1,11 +1,11 @@
 package com.scalevision.domain.video;
 
 import com.scalevision.enums.Formato;
+import com.scalevision.enums.VideoStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Data
 
 public class Video {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id; // genera solo
@@ -26,7 +27,7 @@ public class Video {
     Double tamano;  // mb /default
     Formato formato; // mp4, mpg, mpeg /dedault
     Double duracion;  // segundos default
-    String estado; //  enum ejusta el back
+    VideoStatus estado; //  enum ejusta el back
     String error;  // 501, se desconecto.
     LocalDateTime fecha; // cuando se genero
 
@@ -34,10 +35,10 @@ public class Video {
     String urlVideoOriginal; // se genera al subir el video
 
     @Column(name = "url_mini_vista_01" )
-    String urlMiniVista01; // genrada por modelo de video
+    String urlMiniVista01; // generada por modelo de video
 
     @Column(name = "url_mini_vista_02")
-    String urlMiniVista_02; // ""
+    String urlMiniVista02; // ""
 
     @Column(name = "url_mini_vista_03")
     String urlMiniVista03; // ""

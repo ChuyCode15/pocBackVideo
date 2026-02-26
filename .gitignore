@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Carpetas de datos y archivos subidos (Lo que viste en Untracked)
+data/
+storage/
+
 ### STS ###
 .apt_generated
 .classpath

@@ -2,15 +2,22 @@ spring:
   application:
     name: scaleVision
 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
-app:
-  storage:
-    # Ruta física para guardar el archivo
-    path: ${DB_STORAGE_VIDEO}
-    # URL para que el frontend consuma el archivo
-    url: ${STORAGE_NGIX}
+  datasource:
+    url: jdbc:h2:file:./data/scalevision;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
 
-
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
   servlet:
     multipart:
@@ -21,3 +28,14 @@ app:
     async:
       request-timeout: 60000
 
+app:
+  storage:
+    path: ${DB_STORAGE_VIDEO}
+    url: ${STORAGE_NGIX}
+
+
+server:
+  error:
+    include-stacktrace: never
+    include-message: always # Para que al menos sepan qué error fue
+    include-binding-errors: always

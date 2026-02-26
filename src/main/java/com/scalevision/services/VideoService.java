@@ -2,11 +2,12 @@ package com.scalevision.services;
 
 
 import com.scalevision.domain.video.Video;
-import com.scalevision.domain.video.dto.DatosDetalleVideo;
+import com.scalevision.domain.video.dto.*;
 import com.scalevision.infra.helpers.VideoValidadoresHelper;
 import com.scalevision.repository.VideoRespository;
+import jakarta.transaction.TransactionScoped;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,6 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
+import static com.scalevision.enums.VideoStatus.CORTANDO;
+import static com.scalevision.enums.VideoStatus.PROCESANDO;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +36,7 @@ public class VideoService {
 
     private final VideoValidadoresHelper videoValidadoresHelper;
 
-    public DatosDetalleVideo nuevoVideo(MultipartFile file, String nickname, Double duration) {
+    public DatosDetalleVideoCargado registrarNuevoVideo(MultipartFile file, String nickname, Double duration) {
         // 1. Validaciones
         videoValidadoresHelper.validaDuracionValida(duration);
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
@@ -41,7 +45,7 @@ public class VideoService {
 
         // 2. Construcción de URL y Guardado
         String urlPublica = storageUrl.endsWith("/") ? storageUrl + nuevoNombreVideo : storageUrl + "/" + nuevoNombreVideo;
-        guardarFisicamente(file, nuevoNombreVideo);
+        guardarFisicamenteVideo(file, nuevoNombreVideo);
 
         // 3. Persistencia
         Video video = new Video();
@@ -49,15 +53,15 @@ public class VideoService {
         video.setUrlVideoNuevo(urlPublica);
         video.setDuracion(duration);
         video.setNickname(nickname);
+        video.setEstado(PROCESANDO);
 
-        var guardado = videoRespository.save(video);
+        var videoRegistro = videoRespository.save(video);
 
-        return new DatosDetalleVideo(guardado.getId(), guardado.getNombre(), guardado.getUrl(), guardado.getDuracion());
+        return new DatosDetalleVideoCargado(videoRegistro);
     }
 
-    private void guardarFisicamente(MultipartFile file, String nombreArchivo) {
+    private void guardarFisicamenteVideo(MultipartFile file, String nombreArchivo) {
         try {
-            // Paths.get maneja correctamente los separadores según el SO (Win/Linux)
             Path rutaDirectorio = Paths.get(storagePath).toAbsolutePath().normalize();
 
             if (!Files.exists(rutaDirectorio)) {
@@ -72,13 +76,26 @@ public class VideoService {
         }
     }
 
-
-    public void guardarVideo(MultipartFile file, String nuevoNombreVideo) {
-        Path ruta = Paths.get(storagePath, nuevoNombreVideo);
-        Files.copy(file.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING)
-                .orElseTwors(
-                        () -> FileUploadException("No se pudo fallo el serviso storage o algo pero el vidoe no se guardo ")
-                );
+    public DatosDetalleEstadoVideo verificarEstado(Long id) {
+        var videoEncontrado = videoValidadoresHelper.validaVideoExista(id);
+        return new DatosDetalleEstadoVideo(videoEncontrado);
     }
 
+    public DatosDetalleVideoMiniVistas miniVistasService(Long id) {
+        var videoEncontrado = videoValidadoresHelper.validaVideoExista(id);
+        return new DatosDetalleVideoMiniVistas(videoEncontrado);
+    }
+
+    public DatosDetalleVideo buscarVideoRecortado(Long id) {
+        var videoEncontrado = videoValidadoresHelper.validaVideoExista(id);
+        return new DatosDetalleVideo(videoEncontrado);
+    }
+
+    @Transactional
+    public DatosDetalleEstadoVideo cortarVideo(Long id, DatosDetalleCortarVideo corte) {
+        var videoEncontrado = videoValidadoresHelper.validaVideoExista(id);
+        // todo llamaos micor servicio y enviamos id , url solicitamos corte, confirmamos cortado
+        videoEncontrado.setEstado(CORTANDO);
+        return new DatosDetalleEstadoVideo(videoEncontrado);
+    }
 }
