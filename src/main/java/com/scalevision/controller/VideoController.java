@@ -19,11 +19,16 @@ public class VideoController {
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<DatosDetalleVideo> uploadVideo(
             @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "nickname", required = false) String nickname,
+            @RequestParam(value = "duration", required = false) Double duration,
             UriComponentsBuilder builder
     ) {
-        DatosDetalleVideo detalleVideo = videoService.nuevoVideo(file);
-        var uri = builder.path("/videos/{id}").buildAndExpand(detalleVideo.id()).toUri();
-        return ResponseEntity.created(uri).body(detalleVideo);
+
+        DatosDetalleVideo nuevoVideo = videoService.nuevoVideo(file, nickname, duration);
+
+        var uri = builder.path("/videos/{id}").buildAndExpand(nuevoVideo.id()).toUri();
+
+        return ResponseEntity.created(uri).body(nuevoVideo);
     }
 
 

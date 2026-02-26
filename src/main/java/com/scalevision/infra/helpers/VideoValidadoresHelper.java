@@ -1,10 +1,14 @@
 package com.scalevision.infra.helpers;
 
 import com.scalevision.infra.exceptions.ex.DuplicateResourceException;
+import com.scalevision.infra.exceptions.ex.InvalidFormatException;
 import com.scalevision.repository.VideoRespository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -12,19 +16,6 @@ public class VideoValidadoresHelper {
 
     private final VideoRespository videoRespository;
 
-    public void validarArchivo(MultipartFile archivo) {
-        String extension = archivo.getOriginalFilename().toLowerCase();
-
-        if (!extension.endsWith(".mp4") && !extension.endsWith(".mpg") && !extension.endsWith(".mpeg"){
-            throw new ValidationExce("El Formato no es compatible");
-        }
-        if (archivo.getSize() > 157286400) {
-            throw new ValidateException("El video excede los 150mb");
-        }
-        if (videoRespository.findByNombreAndActivoTrue(archivo.getName()).isPresent()) {
-            throw new DuplicateResourceException("El Video " + nombre + " ya existente!");
-        }
-    }
 
     public void validaVideoExiste(String nombre) {
 
@@ -35,4 +26,32 @@ public class VideoValidadoresHelper {
 
     }
 
+    public String validaFormatValido(String formato) {
+        if (formato == null ||
+                !formato.equalsIgnoreCase("mp4") ||
+                formato.equalsIgnoreCase("mpg") ||
+                formato.equalsIgnoreCase("mpeg")) {
+            throw new InvalidFormatException("Formato invalido!");
+        }
+        return formato;
+    }
+
+    public void validaDuracionValida(Double duration) {
+
+        if (duration == null || duration <= 0) {
+            throw new IllegalArgumentException("Duración inválida");
+        }
+
+    }
+
+    public String validaNickNameYCreaNombre(String nickName, String formato) {
+        String nuevoNombre = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmss-"));
+
+        if (nickName == null || nickName.isBlank()) {
+            nickName = "usuario" + (new Random().nextInt(9000) + 1000);
+        }
+
+        return nuevoNombre + nickName + "." + formato;
+    }
 }
