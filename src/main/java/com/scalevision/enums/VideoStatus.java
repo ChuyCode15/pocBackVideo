@@ -8,6 +8,7 @@ public enum VideoStatus {
     CORTAR,
     CORTANDO,
     CORTADO,
-    ERROR
+    ERROR,
+    ELIMINADO
 
 }

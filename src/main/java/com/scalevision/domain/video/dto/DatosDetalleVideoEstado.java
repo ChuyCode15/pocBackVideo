@@ -2,11 +2,13 @@ package com.scalevision.domain.video.dto;
 
 import com.scalevision.domain.video.Video;
 
-public record DatosDetalleEstadoVideo(
-        Long id,
+import java.util.UUID;
+
+public record DatosDetalleVideoEstado(
+        UUID id,
         String estado
 ) {
-    public DatosDetalleEstadoVideo(Video video) {
+    public DatosDetalleVideoEstado(Video video) {
         this(
                 video.getId(),
                 video.getEstado().toString()

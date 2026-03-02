@@ -1,21 +1,36 @@
 package com.scalevision.domain.video.dto;
 
-//import io.swagger.v3.oas.annotations.media.Schema;
 import com.scalevision.domain.video.Video;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-//@Schema(description = "Detalles del video procesado y guardado")
+import java.util.UUID;
+
+@Schema(
+        name = "DetalleVideo",
+        description = "Representa la información final de un video procesado dentro de ScaleVision"
+)
 public record DatosDetalleVideo(
 
-        //@Schema(description = "ID único del video en la base de datos", example = "1")
-        Long id,
+        @Schema(
+                description = "Identificador único del video en la base de datos",
+                example = "1",
+                accessMode = Schema.AccessMode.READ_ONLY
+        )
+        UUID id,
 
-        //@Schema(description = "URL pública para acceder al video vía Nginx", example = "http://localhost/videos/user_123_video.mp4")
+        @Schema(
+                description = "URL pública para acceder al video procesado",
+                example = "http://localhost/media/videos/video_recortado_1.mp4"
+        )
         String url,
 
-        //@Schema(description = "Estado actual del video", example = "PROCESANDO")
+        @Schema(
+                description = "Estado actual del procesamiento del video",
+                example = "COMPLETADO",
+                allowableValues = {"PENDIENTE", "PROCESANDO", "COMPLETADO", "ERROR"}
+        )
         String estado
 ) {
-    // Constructor compacto para mapear desde la entidad fácilmente
     public DatosDetalleVideo(Video video) {
         this(
                 video.getId(),

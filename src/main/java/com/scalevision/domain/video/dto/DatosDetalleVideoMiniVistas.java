@@ -2,13 +2,15 @@ package com.scalevision.domain.video.dto;
 
 import com.scalevision.domain.video.Video;
 
+import java.util.UUID;
+
 
 public record DatosDetalleVideoMiniVistas(
 
-    Long id, // genera solo
-    String urlMiniVista01, // genrada por modelo de video
-    String urlMiniVista02, // ""
-    String urlMiniVista03 // ""
+        UUID id, // genera solo
+        String urlMiniVista01, // genrada por modelo de video
+        String urlMiniVista02, // ""
+        String urlMiniVista03 // ""
 
 ) {
     public DatosDetalleVideoMiniVistas (Video video){

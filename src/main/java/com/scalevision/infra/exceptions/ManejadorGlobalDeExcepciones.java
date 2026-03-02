@@ -94,6 +94,7 @@ public class ManejadorGlobalDeExcepciones {
     }
 
     // --- 500/503: ERRORES INTERNOS ---
+/*
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException ex) {
@@ -104,6 +105,7 @@ public class ManejadorGlobalDeExcepciones {
     public ResponseEntity<Map<String, Object>> handleAll(Exception ex) {
         return crearRespuesta(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno", "Ocurrió un error inesperado en el servidor.");
     }
+*/
 
     // --- UTILITARIOS ---
 

@@ -2,22 +2,28 @@ spring:
   application:
     name: scaleVision
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  data:
+    web:
+      pageable:
+        serialization-mode: via-dto
 
+  # --- SECCIÓN DE BASE DE DATOS ACTUALIZADA ---
   datasource:
-    url: jdbc:h2:file:./data/scalevision;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
+    # Usamos tus variables de entorno exactas
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        # Dialecto para que Hibernate hable MySQL correctamente
+        dialect: org.hibernate.dialect.MySQLDialect
+  # --------------------------------------------
 
   servlet:
     multipart:
@@ -32,10 +38,11 @@ app:
   storage:
     path: ${DB_STORAGE_VIDEO}
     url: ${STORAGE_NGIX}
-
+  slicer:
+    url: ${SLICER_API_URL}
 
 server:
   error:
     include-stacktrace: never
-    include-message: always # Para que al menos sepan qué error fue
+    include-message: always
     include-binding-errors: always
