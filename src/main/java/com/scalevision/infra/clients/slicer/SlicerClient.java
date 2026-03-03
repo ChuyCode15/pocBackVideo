@@ -2,6 +2,7 @@ package com.scalevision.infra.clients.slicer;
 
 import com.scalevision.infra.clients.slicer.dto.DatosSlicerRequest;
 import com.scalevision.infra.clients.slicer.dto.DatosSlicerResposeSubir;
+import com.scalevision.infra.clients.slicer.dto.DatosSlicerStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.net.http.HttpClient;
+import java.util.UUID;
 
 @Component
 public class SlicerClient {
@@ -44,4 +46,16 @@ public class SlicerClient {
     }
 
 
+    public DatosSlicerStatus estadoScaneo(UUID id) {
+
+        try {
+            return slicerClient.get()
+                    .uri("/scan/{id}", id)
+                    .retrieve()
+                    .body(DatosSlicerStatus.class);
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo conectar con el servicio Slicer");
+        }
+
+    }
 }

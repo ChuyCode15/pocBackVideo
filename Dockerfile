@@ -1,16 +1,32 @@
 FROM bellsoft/liberica-openjdk-alpine:17
-RUN apk add --no-cache curl
+# ---------- Build Stage ----------
+
+
 WORKDIR /app
 
-
-RUN mkdir -p /app/data /app/storage
-
-COPY target/*.jar app.jar
+COPY . .
+RUN ./mvnw clean package -DskipTests
 
 
-ENV DB_STORAGE_VIDEO=/app/storage
-ENV STORAGE_NGIX=http://20.228.66.108:7400/storage
+# ---------- Runtime Stage ----------
+FROM eclipse-temurin:17-jre-jammy
 
-EXPOSE 8086
+WORKDIR /app
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Crear usuario seguro
+RUN useradd -m springuser
+
+# Copiar jar
+COPY --from=builder /app/target/*.jar app.jar
+
+# Cambiar propietario
+RUN chown -R springuser:springuser /app
+
+USER springuser
+
+# 🔥 Cambiamos el puerto interno
+ENV SERVER_PORT=9090
+
+EXPOSE 9090
+
+ENTRYPOINT ["java","-jar","app.jar"]
